@@ -1,0 +1,9 @@
+# Cline Rules
+
+This workspace is currently empty. For any `cline`-driven task, do not assume existing files or structure.
+
+- If the user provides a detailed project prompt, ask for clarification before generating a full scaffold.
+- When a prompt specifies a project name, stack, or folder structure, mirror that structure exactly and create the requested files in the workspace.
+- Do not begin implementation until the user confirms the project should be created in this workspace.
+- Prefer creating minimal scaffolding first for an empty workspace, then expand after user approval.
+- Link back to `AGENTS.md` for agent behavior guidance when needed.
