@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard';
 import History from './pages/History';
 import Settings from './pages/Settings';
 import Navbar from './components/Navbar';
+import SupportChat from './components/SupportChat';
 
 function App() {
   const location = useLocation();
@@ -33,6 +34,7 @@ function App() {
         <Route path="/history" element={isLoggedIn ? <History /> : <Login />} />
         <Route path="/settings" element={isLoggedIn ? <Settings /> : <Login />} />
       </Routes>
+      <SupportChat />
     </div>
   );
 }

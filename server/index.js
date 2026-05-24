@@ -9,6 +9,7 @@ import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import activityRoutes from './routes/activityRoutes.js';
+import supportRoutes from './routes/supportRoutes.js';
 import weeklyJob from './jobs/weeklyJob.js';
 
 dotenv.config();
@@ -40,6 +41,7 @@ app.use('/auth', authRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/activity', activityRoutes);
+app.use('/api/support', supportRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'LinkedIn Auto-Poster API is running' });
