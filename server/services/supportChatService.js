@@ -6,7 +6,7 @@ dotenv.config();
 const SYSTEM_PROMPT =
   'You are a helpful support assistant for LinkedIn Auto Poster app. Help users with login issues, posting problems, dashboard questions, and general app usage.';
 
-const MODEL_NAME = 'gemini-1.5-flash-latest';
+const MODEL_NAME = 'gemini-1.5-flash';
 
 const getModel = () => {
   const apiKey = process.env.GEMINI_API_KEY;
