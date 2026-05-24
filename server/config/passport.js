@@ -1,30 +1,33 @@
 import passport from 'passport';
-import passportLinkedIn from 'passport-linkedin-oauth2';
+import OpenIDConnectStrategy from 'passport-openidconnect';
 import dotenv from 'dotenv';
 import User from '../models/User.js';
-
-const LinkedInStrategy = passportLinkedIn.Strategy;
 
 dotenv.config();
 
 passport.use(
-  new LinkedInStrategy(
+  new OpenIDConnectStrategy(
     {
+      issuer: 'https://www.linkedin.com/oauth',
+      authorizationURL: 'https://www.linkedin.com/oauth/v2/authorization',
+      tokenURL: 'https://www.linkedin.com/oauth/v2/accessToken',
+      userInfoURL: 'https://api.linkedin.com/v2/userinfo',
       clientID: process.env.LINKEDIN_CLIENT_ID,
       clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
       callbackURL: process.env.LINKEDIN_CALLBACK_URL,
-      scope: ['openid', 'profile', 'email', 'w_member_social'],
-      state: true,
+      scope: ['openid', 'profile', 'email'],
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (issuer, profile, context, idToken, accessToken, refreshToken, done) => {
       try {
-        const email = profile.emails?.[0]?.value || '';
-        const linkedinId = profile.id;
+        const email = profile.emails?.[0]?.value || profile._json?.email || '';
+        const linkedinId = profile.id || profile._json?.sub || '';
+        const name = profile.displayName || profile._json?.name || '';
+
         const existingUser = await User.findOne({ linkedinId });
 
         if (existingUser) {
           existingUser.accessToken = accessToken;
-          existingUser.name = profile.displayName || existingUser.name;
+          existingUser.name = name || existingUser.name;
           existingUser.email = email || existingUser.email;
           await existingUser.save();
           return done(null, existingUser);
@@ -32,7 +35,7 @@ passport.use(
 
         const user = await User.create({
           linkedinId,
-          name: profile.displayName,
+          name,
           email,
           accessToken,
         });
