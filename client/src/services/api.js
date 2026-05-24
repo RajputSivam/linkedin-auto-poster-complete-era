@@ -22,4 +22,5 @@ export const skipPost = (id) => api.post(`/api/post/skip/${id}`);
 export const uploadFile = (formData) => api.post('/api/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 export const getMe = () => api.get('/auth/me');
 export const updateSettings = (data) => api.put('/auth/settings', data);
+export const sendSupportMessage = (messages) => api.post('/api/support/chat', { messages });
 export default api;
