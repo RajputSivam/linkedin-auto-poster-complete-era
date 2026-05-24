@@ -1,5 +1,5 @@
 const Login = () => {
-  const loginUrl = 'http://localhost:5001/auth/linkedin';
+  const loginUrl = `${import.meta.env.VITE_API_URL}/auth/linkedin`;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-24">
