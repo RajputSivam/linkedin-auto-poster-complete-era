@@ -6,7 +6,8 @@ dotenv.config();
 const SYSTEM_PROMPT =
   'You are a helpful support assistant for LinkedIn Auto Poster app. Help users with login issues, posting problems, dashboard questions, and general app usage.';
 
-const MODEL_NAME = 'gemini-1.5-flash';
+const MODEL_NAME = 'gemini-2.0-flash-lite';
+const API_VERSION = 'v1';
 
 const getModel = () => {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -15,10 +16,13 @@ const getModel = () => {
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  return genAI.getGenerativeModel({
-    model: MODEL_NAME,
-    systemInstruction: SYSTEM_PROMPT,
-  });
+  return genAI.getGenerativeModel(
+    {
+      model: MODEL_NAME,
+      systemInstruction: SYSTEM_PROMPT,
+    },
+    { apiVersion: API_VERSION }
+  );
 };
 
 const chat = async (messages) => {
