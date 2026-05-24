@@ -10,7 +10,7 @@ const getApiUrl = () => {
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY is not configured on the server');
   }
-  return `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  return `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 };
 
 const chat = async (messages) => {
