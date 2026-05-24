@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import Logo from './Logo';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const Navbar = () => {
     <header className="border-b border-slate-200 bg-white px-6 py-4 shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6">
         <div className="flex items-center gap-3">
-          <div className="rounded-2xl bg-blue-600 px-3 py-2 text-white">in</div>
+          <Logo size="md" />
           <span className="text-xl font-semibold text-slate-900">LinkedIn Auto-Poster</span>
         </div>
         <nav className="flex items-center gap-4 text-slate-600">
