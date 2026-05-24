@@ -43,16 +43,21 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/support', supportRoutes);
 
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 app.get('/', (req, res) => {
   res.json({ message: 'LinkedIn Auto-Poster API is running' });
 });
 
 const startServer = async () => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+
   try {
     await connectDB();
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
     weeklyJob();
   } catch (error) {
     console.error('Server failed to start:', error);

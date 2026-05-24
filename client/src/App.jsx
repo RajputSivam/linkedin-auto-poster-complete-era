@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -7,12 +7,34 @@ import History from './pages/History';
 import Settings from './pages/Settings';
 import Navbar from './components/Navbar';
 import SupportChat from './components/SupportChat';
+import BackendLoadingScreen from './components/BackendLoadingScreen';
+
+const MIN_WARMUP_MS = 3000;
+const MAX_WARMUP_MS = 5000;
 
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const token = localStorage.getItem('token');
+  const [isWarmingUp, setIsWarmingUp] = useState(true);
+
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const minDelay = new Promise((resolve) => setTimeout(resolve, MIN_WARMUP_MS));
+    const maxDelay = new Promise((resolve) => setTimeout(resolve, MAX_WARMUP_MS));
+
+    const healthPing = apiUrl
+      ? fetch(`${apiUrl}/health`).catch(() => {})
+      : Promise.resolve();
+
+    const warmup = async () => {
+      await Promise.race([Promise.all([minDelay, healthPing]), maxDelay]);
+      setIsWarmingUp(false);
+    };
+
+    warmup();
+  }, []);
 
   useEffect(() => {
     const urlToken = params.get('token');
@@ -23,6 +45,10 @@ function App() {
   }, [location.search, navigate, params]);
 
   const isLoggedIn = Boolean(localStorage.getItem('token'));
+
+  if (isWarmingUp) {
+    return <BackendLoadingScreen />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
