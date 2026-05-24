@@ -1,4 +1,3 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -6,46 +5,46 @@ dotenv.config();
 const SYSTEM_PROMPT =
   'You are a helpful support assistant for LinkedIn Auto Poster app. Help users with login issues, posting problems, dashboard questions, and general app usage.';
 
-const MODEL_NAME = 'gemini-2.0-flash-lite';
-const API_VERSION = 'v1';
-
-const getModel = () => {
+const getApiUrl = () => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY is not configured on the server');
   }
-
-  const genAI = new GoogleGenerativeAI(apiKey);
-  return genAI.getGenerativeModel(
-    {
-      model: MODEL_NAME,
-      systemInstruction: SYSTEM_PROMPT,
-    },
-    { apiVersion: API_VERSION }
-  );
+  return `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 };
 
 const chat = async (messages) => {
-  const model = getModel();
-
   if (messages.length === 0) {
     throw new Error('At least one message is required');
   }
 
-  if (messages.length === 1) {
-    const result = await model.generateContent(messages[0].content);
-    return result.response.text();
+  const response = await fetch(getApiUrl(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      systemInstruction: {
+        parts: [{ text: SYSTEM_PROMPT }],
+      },
+      contents: messages.map((msg) => ({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: msg.content }],
+      })),
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Gemini API error (${response.status}): ${errorBody}`);
   }
 
-  const history = messages.slice(0, -1).map((msg) => ({
-    role: msg.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: msg.content }],
-  }));
+  const data = await response.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-  const lastMessage = messages[messages.length - 1];
-  const chatSession = model.startChat({ history });
-  const result = await chatSession.sendMessage(lastMessage.content);
-  return result.response.text();
+  if (!text) {
+    throw new Error('No response text returned from Gemini API');
+  }
+
+  return text;
 };
 
 export default { chat, SYSTEM_PROMPT };
