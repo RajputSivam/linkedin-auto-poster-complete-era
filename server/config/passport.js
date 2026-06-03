@@ -15,7 +15,7 @@ passport.use(
       clientID: process.env.LINKEDIN_CLIENT_ID,
       clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
       callbackURL: process.env.LINKEDIN_CALLBACK_URL,
-      scope: ['openid', 'profile', 'email'],
+      scope: ['openid', 'profile', 'email', 'w_member_social'],
     },
     async (issuer, profile, context, idToken, accessToken, refreshToken, done) => {
       try {
