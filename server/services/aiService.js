@@ -25,25 +25,24 @@ const safeGenerateFromActivity = (activityData) => {
 };
 
 const generatePost = async (activityData) => {
-  // Try to use Google Gemini if available, otherwise fall back to a safe local generator.
-  if (process.env.GEMINI_API_KEY) {
+  if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your_gemini_api_key') {
     try {
-      const ga = await import('@google/generative-ai');
-      const { TextGenerationModel } = ga;
-      const model = new TextGenerationModel({ apiKey: process.env.GEMINI_API_KEY });
+      const { GoogleGenerativeAI } = await import('@google/generative-ai');
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
       const prompt = `Generate a professional, engaging LinkedIn post based on this week's coding activity. Include emojis, bullet points, and relevant hashtags. Activity data: ${JSON.stringify(activityData)}`;
-      const generation = await model.generate({ model: 'gemini-pro', prompt, maxOutputTokens: 400 });
-      const content = generation?.candidates?.[0]?.content || safeGenerateFromActivity(activityData);
+      const generation = await model.generateContent(prompt);
+      const content = generation?.response?.text?.() || safeGenerateFromActivity(activityData);
 
       const evaluationPrompt = `Read the following LinkedIn post and provide a short evaluation message plus a score from 1 to 10:\n\nPost:\n${content}`;
-      const evaluation = await model.generate({ model: 'gemini-pro', prompt: evaluationPrompt, maxOutputTokens: 100 });
-      const evaluationText = evaluation?.candidates?.[0]?.content || 'Good job! Score: 8';
+      const evaluation = await model.generateContent(evaluationPrompt);
+      const evaluationText = evaluation?.response?.text?.() || 'Good job! Score: 8';
       const feedbackScoreMatch = evaluationText.match(/(\d{1,2})/);
       const feedbackScore = feedbackScoreMatch ? Number(feedbackScoreMatch[1]) : 8;
 
       return { content, feedbackMessage: evaluationText, feedbackScore };
     } catch (err) {
-      // If the native package import fails, fall back to local generator.
       const content = safeGenerateFromActivity(activityData);
       return { content, feedbackMessage: 'Fallback evaluation: looks good', feedbackScore: 8 };
     }
