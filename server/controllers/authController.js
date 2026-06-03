@@ -39,12 +39,6 @@ export const getMe = async (req, res) => {
       postingMode: user.postingMode,
       githubUsername: user.githubUsername,
       leetcodeUsername: user.leetcodeUsername,
-      codeforcesHandle: user.codeforcesHandle,
-      codechefUsername: user.codechefUsername,
-      hackerrankUsername: user.hackerrankUsername,
-      gfgUsername: user.gfgUsername,
-      atcoderUsername: user.atcoderUsername,
-      kaggleUsername: user.kaggleUsername,
     };
 
     res.json(safeUser);
@@ -70,23 +64,11 @@ export const updateSettings = async (req, res) => {
     const {
       githubUsername,
       leetcodeUsername,
-      codeforcesHandle,
-      codechefUsername,
-      hackerrankUsername,
-      gfgUsername,
-      atcoderUsername,
-      kaggleUsername,
       postingMode,
     } = req.body;
 
     user.githubUsername = githubUsername ?? user.githubUsername;
     user.leetcodeUsername = leetcodeUsername ?? user.leetcodeUsername;
-    user.codeforcesHandle = codeforcesHandle ?? user.codeforcesHandle;
-    user.codechefUsername = codechefUsername ?? user.codechefUsername;
-    user.hackerrankUsername = hackerrankUsername ?? user.hackerrankUsername;
-    user.gfgUsername = gfgUsername ?? user.gfgUsername;
-    user.atcoderUsername = atcoderUsername ?? user.atcoderUsername;
-    user.kaggleUsername = kaggleUsername ?? user.kaggleUsername;
     user.postingMode = postingMode ?? user.postingMode;
 
     await user.save();

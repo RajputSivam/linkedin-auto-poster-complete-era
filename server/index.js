@@ -9,7 +9,6 @@ import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import activityRoutes from './routes/activityRoutes.js';
-import supportRoutes from './routes/supportRoutes.js';
 import weeklyJob from './jobs/weeklyJob.js';
 
 dotenv.config();
@@ -19,9 +18,15 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: allowedOrigins,
     credentials: true,
   })
 );
@@ -41,7 +46,6 @@ app.use('/auth', authRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/activity', activityRoutes);
-app.use('/api/support', supportRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });

@@ -8,12 +8,17 @@ export const getActivity = async (req, res) => {
     const user = req.user;
     if (!user) return res.status(401).json({ message: 'Unauthorized' });
 
-    const [github, leetcode, codeforces, codechef] = await Promise.all([
+    const [githubResult, leetcodeResult, codeforcesResult, codechefResult] = await Promise.allSettled([
       githubService.getGithubActivity(user.githubUsername),
       leetcodeService.getLeetcodeActivity(user.leetcodeUsername),
       codeforcesService.getCodeforcesActivity(user.codeforcesHandle),
       codechefService.getCodechefActivity(user.codechefUsername),
     ]);
+
+    const github = githubResult.status === 'fulfilled' ? githubResult.value : { commits: 0, prs: 0 };
+    const leetcode = leetcodeResult.status === 'fulfilled' ? leetcodeResult.value : { solved: 0, languages: [] };
+    const codeforces = codeforcesResult.status === 'fulfilled' ? codeforcesResult.value : { rating: null, contestsThisWeek: 0, problemsSolved: 0 };
+    const codechef = codechefResult.status === 'fulfilled' ? codechefResult.value : { rating: null, stars: null };
 
     res.json({ github, leetcode, codeforces, codechef });
   } catch (error) {
