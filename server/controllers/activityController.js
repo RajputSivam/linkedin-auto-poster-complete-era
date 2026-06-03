@@ -17,12 +17,19 @@ export const getActivity = async (req, res) => {
 
     const github = githubResult.status === 'fulfilled' ? githubResult.value : { commits: 0, prs: 0 };
     const leetcode = leetcodeResult.status === 'fulfilled'
-      ? { ...leetcodeResult.value, submissionsThisWeek: leetcodeResult.value?.submissionsThisWeek ?? 0 }
+      ? { ...leetcodeResult.value, solved: leetcodeResult.value?.solved ?? 0, submissionsThisWeek: leetcodeResult.value?.submissionsThisWeek ?? 0 }
       : { solved: 0, submissionsThisWeek: 0, languages: [] };
     const codeforces = codeforcesResult.status === 'fulfilled' ? codeforcesResult.value : { rating: null, contestsThisWeek: 0, problemsSolved: 0 };
     const codechef = codechefResult.status === 'fulfilled' ? codechefResult.value : { rating: null, stars: null };
 
-    res.json({ github, leetcode, codeforces, codechef });
+    res.json({
+      github,
+      leetcode,
+      leetcodeSolved: leetcode.solved ?? 0,
+      leetcodeSubmissions: leetcode.submissionsThisWeek ?? 0,
+      codeforces,
+      codechef,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
