@@ -6,7 +6,6 @@ import Dashboard from './components/Dashboard';
 import History from './pages/History';
 import Settings from './pages/Settings';
 import Navbar from './components/Navbar';
-import SupportChat from './components/SupportChat';
 import BackendLoadingScreen from './components/BackendLoadingScreen';
 
 const MIN_WARMUP_MS = 3000;
@@ -20,12 +19,12 @@ function App() {
   const [isWarmingUp, setIsWarmingUp] = useState(true);
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL;
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     const minDelay = new Promise((resolve) => setTimeout(resolve, MIN_WARMUP_MS));
     const maxDelay = new Promise((resolve) => setTimeout(resolve, MAX_WARMUP_MS));
 
     const healthPing = apiUrl
-      ? fetch(`${apiUrl}/health`).catch(() => {})
+      ? fetch(`${apiUrl}/health`).catch(() => { })
       : Promise.resolve();
 
     const warmup = async () => {
@@ -60,7 +59,6 @@ function App() {
         <Route path="/history" element={isLoggedIn ? <History /> : <Login />} />
         <Route path="/settings" element={isLoggedIn ? <Settings /> : <Login />} />
       </Routes>
-      <SupportChat />
     </div>
   );
 }

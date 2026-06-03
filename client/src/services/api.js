@@ -1,14 +1,19 @@
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers = {
+      ...config.headers,
+      Authorization: `Bearer ${token}`,
+    };
   }
   return config;
 });
@@ -22,5 +27,4 @@ export const skipPost = (id) => api.post(`/api/post/skip/${id}`);
 export const uploadFile = (formData) => api.post('/api/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 export const getMe = () => api.get('/auth/me');
 export const updateSettings = (data) => api.put('/auth/settings', data);
-export const sendSupportMessage = (messages) => api.post('/api/support/chat', { messages });
 export default api;
