@@ -9,7 +9,9 @@ const safeGenerateFromActivity = (activityData) => {
     lines.push(`• GitHub: ${activityData.github.commits || 0} commits, ${activityData.github.prs || 0} PRs`);
   }
   if (activityData?.leetcode) {
-    lines.push(`• LeetCode: ${activityData.leetcode.solved || 0} solved (${(activityData.leetcode.languages || []).join(', ')})`);
+    const solved = activityData.leetcode.solved || 0;
+    const submissions = activityData.leetcode.submissionsThisWeek || 0;
+    lines.push(`• LeetCode: ${solved} solved, ${submissions} submissions this week (${(activityData.leetcode.languages || []).join(', ')})`);
   }
   if (activityData?.codeforces) {
     lines.push(`• Codeforces: rating ${activityData.codeforces.rating ?? 'N/A'}, solved ${activityData.codeforces.problemsSolved || 0}`);

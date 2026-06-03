@@ -16,7 +16,9 @@ export const getActivity = async (req, res) => {
     ]);
 
     const github = githubResult.status === 'fulfilled' ? githubResult.value : { commits: 0, prs: 0 };
-    const leetcode = leetcodeResult.status === 'fulfilled' ? leetcodeResult.value : { solved: 0, languages: [] };
+    const leetcode = leetcodeResult.status === 'fulfilled'
+      ? { ...leetcodeResult.value, submissionsThisWeek: leetcodeResult.value?.submissionsThisWeek ?? 0 }
+      : { solved: 0, submissionsThisWeek: 0, languages: [] };
     const codeforces = codeforcesResult.status === 'fulfilled' ? codeforcesResult.value : { rating: null, contestsThisWeek: 0, problemsSolved: 0 };
     const codechef = codechefResult.status === 'fulfilled' ? codechefResult.value : { rating: null, stars: null };
 
