@@ -37,7 +37,7 @@ const Dashboard = () => {
     <div className="mx-auto max-w-7xl px-6 py-10">
       <div className="mb-10 rounded-3xl bg-white p-8 shadow-sm">
         <h1 className="text-3xl font-semibold">Dashboard</h1>
-        <p className="mt-2 text-slate-600">Summary of your weekly coding activity and pending LinkedIn posts.</p>
+        <p className="mt-2 text-slate-600">GitHub and LeetCode activity summary, plus your pending LinkedIn posts.</p>
       </div>
       <ActivitySummary activity={activity} />
       <UploadSection />

@@ -1,9 +1,12 @@
 const ActivitySummary = ({ activity }) => {
+  const leetcodeSolved = activity?.leetcode?.solved ?? activity?.leetcodeSolved ?? 0;
+  const leetcodeSubmissions = activity?.leetcode?.submissionsThisWeek ?? activity?.leetcodeSubmissions ?? 0;
+
   const metrics = [
-    { label: 'GitHub commits', value: activity?.github?.commits ?? 'N/A' },
-    { label: 'GitHub PRs', value: activity?.github?.prs ?? 'N/A' },
-    { label: 'CF rating', value: activity?.codeforces?.rating ?? 'N/A' },
-    { label: 'CodeChef stars', value: activity?.codechef?.stars ?? 'N/A' },
+    { label: 'GitHub commits', value: activity?.github?.commits ?? 0 },
+    { label: 'GitHub PRs', value: activity?.github?.prs ?? 0 },
+    { label: 'LeetCode solved', value: leetcodeSolved },
+    { label: 'LeetCode submissions this week', value: leetcodeSubmissions },
   ];
 
   return (
