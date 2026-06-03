@@ -28,6 +28,7 @@ const getLeetcodeActivity = async (username) => {
     const submissions = response.data?.data?.recentSubmissionList || [];
     const since = Date.now() - 7 * 24 * 60 * 60 * 1000;
     let solved = 0;
+    let submissionsThisWeek = 0;
     const languages = new Set();
 
     submissions.forEach((submission) => {
@@ -35,11 +36,12 @@ const getLeetcodeActivity = async (username) => {
       if (date < since) return;
       if (submission.statusDisplay === 'Accepted') {
         solved += 1;
+        submissionsThisWeek += 1;
         if (submission.lang) languages.add(submission.lang);
       }
     });
 
-    return { solved, languages: Array.from(languages) };
+    return { solved, submissionsThisWeek, languages: Array.from(languages) };
   } catch (error) {
     console.error('LeetCode activity fetch failed:', error.response?.status || error.code, error.message);
     return { solved: 0, languages: [] };
