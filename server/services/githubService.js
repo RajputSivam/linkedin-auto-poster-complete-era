@@ -4,8 +4,11 @@ const getGithubActivity = async (username) => {
   if (!username) return { commits: 0, prs: 0 };
 
   try {
+    console.log('[GitHub] GITHUB_TOKEN present:', Boolean(process.env.GITHUB_TOKEN), 'length:', process.env.GITHUB_TOKEN?.length || 0);
+
     const headers = {
       Accept: 'application/vnd.github+json',
+      'User-Agent': 'linkedin-auto-poster',
     };
 
     if (process.env.GITHUB_TOKEN) {
