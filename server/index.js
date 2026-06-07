@@ -52,6 +52,47 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+app.post('/api/trigger-weekly-job', async (req, res) => {
+  const secret = req.headers['x-cron-secret'];
+  if (secret !== process.env.CRON_SECRET) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  try {
+    const users = await User.find({});
+    await Promise.all(
+      users.map(async (user) => {
+        try {
+          const [github, leetcode, codeforces, codechef] = await Promise.all([
+            githubService.getGithubActivity(user.githubUsername),
+            leetcodeService.getLeetcodeActivity(user.leetcodeUsername),
+            codeforcesService.getCodeforcesActivity(user.codeforcesHandle),
+            codechefService.getCodechefActivity(user.codechefUsername),
+          ]);
+          if (user.accessTokenExpiresAt && new Date(user.accessTokenExpiresAt) <= new Date()) {
+            return;
+          }
+          const activityData = { github, leetcode, codeforces, codechef };
+          const { content, feedbackMessage, feedbackScore } = await aiService.generatePost(activityData);
+          const weekStart = new Date();
+          weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+          const post = await Post.create({
+            userId: user._id, content, feedbackMessage, feedbackScore, weekStart,
+            status: user.postingMode === 'auto-post' ? 'published' : 'pending',
+          });
+          if (user.postingMode === 'auto-post') {
+            await linkedinService.publishPost(user.accessToken, content, post.mediaUrl, user.linkedinId);
+          }
+        } catch (err) {
+          console.error('Failed to process user:', err.message);
+        }
+      })
+    );
+    res.json({ success: true, message: 'Weekly job triggered successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/', (req, res) => {
   res.json({ message: 'LinkedIn Auto-Poster API is running' });
 });
