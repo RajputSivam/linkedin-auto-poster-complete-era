@@ -17,16 +17,22 @@ passport.use(
       callbackURL: process.env.LINKEDIN_CALLBACK_URL,
       scope: ['openid', 'profile', 'email', 'w_member_social'],
     },
-    async (issuer, profile, context, idToken, accessToken, refreshToken, done) => {
+    async (issuer, profile, context, idToken, accessToken, refreshToken, params, done) => {
       try {
         const email = profile.emails?.[0]?.value || profile._json?.email || '';
         const linkedinId = profile.id || profile._json?.sub || '';
         const name = profile.displayName || profile._json?.name || '';
+        const expiresInSeconds = Number(params?.expires_in || 0);
+        const accessTokenExpiresAt = expiresInSeconds > 0
+          ? new Date(Date.now() + expiresInSeconds * 1000)
+          : null;
 
         const existingUser = await User.findOne({ linkedinId });
 
         if (existingUser) {
           existingUser.accessToken = accessToken;
+          existingUser.refreshToken = refreshToken || existingUser.refreshToken;
+          existingUser.accessTokenExpiresAt = accessTokenExpiresAt;
           existingUser.name = name || existingUser.name;
           existingUser.email = email || existingUser.email;
           await existingUser.save();
@@ -38,6 +44,8 @@ passport.use(
           name,
           email,
           accessToken,
+          refreshToken,
+          accessTokenExpiresAt,
         });
 
         return done(null, user);

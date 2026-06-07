@@ -10,6 +10,7 @@ import postRoutes from './routes/postRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import activityRoutes from './routes/activityRoutes.js';
 import weeklyJob from './jobs/weeklyJob.js';
+import keepAliveJob from './jobs/keepAliveJob.js';
 
 dotenv.config();
 
@@ -63,6 +64,7 @@ const startServer = async () => {
   try {
     await connectDB();
     weeklyJob();
+    keepAliveJob();
   } catch (error) {
     console.error('Server failed to start:', error);
     process.exit(1);

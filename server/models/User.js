@@ -8,6 +8,8 @@ const userSchema = new Schema(
     name: String,
     email: String,
     accessToken: String,
+    refreshToken: String,
+    accessTokenExpiresAt: Date,
     postingMode: { type: String, enum: ['auto-post', 'ask-first'], default: 'ask-first' },
     githubUsername: String,
     leetcodeUsername: String,
