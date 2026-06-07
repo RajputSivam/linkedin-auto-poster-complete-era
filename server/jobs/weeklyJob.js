@@ -11,9 +11,12 @@ import linkedinService from '../services/linkedinService.js';
 
 dotenv.config();
 
+export const WEEKLY_CRON_EXPRESSION = '30 15 * * 0';
+export const WEEKLY_TIMEZONE = 'UTC';
+
 const weeklyJob = () => {
   cron.schedule(
-    '0 21 * * 0',
+    WEEKLY_CRON_EXPRESSION,
     async () => {
       console.log('Running weekly job for LinkedIn Auto-Poster');
       try {
@@ -28,6 +31,11 @@ const weeklyJob = () => {
                 codeforcesService.getCodeforcesActivity(user.codeforcesHandle),
                 codechefService.getCodechefActivity(user.codechefUsername),
               ]);
+
+              if (user.accessTokenExpiresAt && new Date(user.accessTokenExpiresAt) <= new Date()) {
+                console.warn(`Skipping LinkedIn publish for ${user.linkedinId}: stored access token expired at ${user.accessTokenExpiresAt.toISOString()}`);
+                return;
+              }
 
               const activityData = { github, leetcode, codeforces, codechef };
               const { content, feedbackMessage, feedbackScore } = await aiService.generatePost(activityData);
@@ -57,7 +65,7 @@ const weeklyJob = () => {
       }
     },
     {
-      timezone: 'Asia/Kolkata',
+      timezone: WEEKLY_TIMEZONE,
     }
   );
 };

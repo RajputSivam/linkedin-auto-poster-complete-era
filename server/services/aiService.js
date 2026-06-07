@@ -1,4 +1,6 @@
 import dotenv from 'dotenv';
+import Groq from 'groq-sdk';
+
 dotenv.config();
 
 const safeGenerateFromActivity = (activityData) => {
@@ -25,19 +27,33 @@ const safeGenerateFromActivity = (activityData) => {
 };
 
 const generatePost = async (activityData) => {
-  if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your_gemini_api_key') {
+  if (process.env.GROQ_API_KEY) {
     try {
-      const { GoogleGenerativeAI } = await import('@google/generative-ai');
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
       const prompt = `Generate a professional, engaging LinkedIn post based on this week's coding activity. Include emojis, bullet points, and relevant hashtags. Activity data: ${JSON.stringify(activityData)}`;
-      const generation = await model.generateContent(prompt);
-      const content = generation?.response?.text?.() || safeGenerateFromActivity(activityData);
+      const generation = await client.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: 'You are an expert LinkedIn copywriter.' },
+          { role: 'user', content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 400,
+      });
+      const content = generation?.choices?.[0]?.message?.content || safeGenerateFromActivity(activityData);
 
       const evaluationPrompt = `Read the following LinkedIn post and provide a short evaluation message plus a score from 1 to 10:\n\nPost:\n${content}`;
-      const evaluation = await model.generateContent(evaluationPrompt);
-      const evaluationText = evaluation?.response?.text?.() || 'Good job! Score: 8';
+      const evaluation = await client.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: 'You are a concise evaluator.' },
+          { role: 'user', content: evaluationPrompt },
+        ],
+        temperature: 0.2,
+        max_tokens: 120,
+      });
+      const evaluationText = evaluation?.choices?.[0]?.message?.content || 'Good job! Score: 8';
       const feedbackScoreMatch = evaluationText.match(/(\d{1,2})/);
       const feedbackScore = feedbackScoreMatch ? Number(feedbackScoreMatch[1]) : 8;
 
