@@ -4,7 +4,7 @@
 
 ![LinkedIn Auto-Poster Banner](https://img.shields.io/badge/LinkedIn-Auto--Poster-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)
 
-**A full-stack MERN + GenAI web application that tracks your weekly coding activity across platforms, generates engaging LinkedIn posts using Google Gemini, and publishes them automatically — or after your approval.**
+**A full-stack MERN + GenAI web application that tracks your weekly coding activity across platforms, generates engaging LinkedIn posts using Groq AI, and publishes them automatically — or after your approval.**
 
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Vercel-000000?style=for-the-badge&logo=vercel)](https://linkedin-auto-poster-complete-era.vercel.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/RajputSivam/linkedin-auto-poster-complete-era)
@@ -35,7 +35,7 @@
 LinkedIn Auto-Poster automates your professional content creation by:
 
 1. **Tracking** your weekly coding activity (GitHub commits, LeetCode/Codeforces/CodeChef solutions)
-2. **Generating** professional LinkedIn posts via Google Gemini AI
+2. **Generating** professional LinkedIn posts via Groq AI
 3. **Publishing** automatically every Sunday at 9 PM IST — or sending you a preview for approval first
 
 No more manually writing LinkedIn posts. Just code, and let the app do the storytelling.
@@ -46,7 +46,7 @@ No more manually writing LinkedIn posts. Just code, and let the app do the story
 
 - 🔐 **LinkedIn OAuth** — Secure login via Passport.js LinkedIn strategy
 - 📊 **Activity Tracking** — Fetches coding stats from GitHub, LeetCode, Codeforces, CodeChef
-- 🤖 **AI Post Generation** — Google Gemini crafts engaging, human-sounding posts
+- 🤖 **AI Post Generation** — Groq AI crafts engaging, human-sounding posts
 - ✅ **Approval Mode** — Preview & edit generated posts before publishing
 - ⚡ **Auto-Publish Mode** — Fully automated, zero manual effort
 - 🖼️ **Image Support** — Cloudinary integration for post media uploads
@@ -72,7 +72,7 @@ No more manually writing LinkedIn posts. Just code, and let the app do the story
 | MongoDB + Mongoose | Database & ODM |
 | Passport.js (LinkedIn OAuth) | Authentication |
 | JWT + bcrypt | Token auth & password hashing |
-| Google Gemini API | AI post generation |
+| Groq API | AI post generation |
 | Puppeteer | Web scraping for activity data |
 | Cloudinary | Image hosting & management |
 | node-cron | Scheduled job runner |
@@ -92,7 +92,7 @@ No more manually writing LinkedIn posts. Just code, and let the app do the story
 │                                                         │
 │  ┌────────────┐  ┌──────────────┐  ┌────────────────┐  │
 │  │ Auth Layer │  │ Activity     │  │ Post Generator │  │
-│  │ (LinkedIn  │  │ Tracker      │  │ (Gemini AI)    │  │
+│  │ (LinkedIn  │  │ Tracker      │  │ (Groq AI)      │  │
 │  │  OAuth/JWT)│  │ (Puppeteer)  │  │                │  │
 │  └────────────┘  └──────┬───────┘  └───────┬────────┘  │
 │                         │                  │            │
@@ -133,7 +133,7 @@ linkedin-auto-poster-complete-era/
 │   ├── controllers/           # Route handler logic
 │   ├── models/                # Mongoose schemas
 │   ├── routes/                # Express route definitions
-│   ├── services/              # Gemini AI, Puppeteer, cron jobs
+│   ├── services/              # Groq AI, Puppeteer, cron jobs
 │   ├── middleware/            # Auth middleware (JWT verify)
 │   ├── .env                   # Environment variables (not committed)
 │   ├── app.js                 # Express app entry point
@@ -153,7 +153,7 @@ linkedin-auto-poster-complete-era/
 
 - Node.js v18+
 - MongoDB (local or Atlas)
-- Google Gemini API key
+- Groq API key
 - LinkedIn Developer App (OAuth credentials)
 - Cloudinary account
 
@@ -223,8 +223,8 @@ LINKEDIN_CLIENT_ID=your_linkedin_client_id
 LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
 LINKEDIN_CALLBACK_URL=http://localhost:5000/auth/linkedin/callback
 
-# Google Gemini AI
-GEMINI_API_KEY=your_gemini_api_key
+# Groq AI
+GROQ_API_KEY=your_groq_api_key
 
 # Cloudinary
 CLOUDINARY_CLOUD_NAME=your_cloud_name
@@ -247,11 +247,11 @@ Every Sunday at 9 PM IST
   (GitHub commits, LeetCode/CF/CC problems solved this week)
          │
          ▼
-  Send activity data to Google Gemini
+  Send activity data to Groq AI
   with a crafted prompt
          │
          ▼
-  Gemini generates a professional LinkedIn post
+  Groq generates a professional LinkedIn post
          │
          ├── AUTO MODE → Publish directly via LinkedIn API
          │
